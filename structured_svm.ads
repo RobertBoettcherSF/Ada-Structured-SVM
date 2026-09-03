@@ -5,9 +5,8 @@ generic
    type Input_Type is private;
    type Output_Type is private;
 
-   -- Dimensionality of the joint feature map space
-   Feature_Dimension : Positive;
-   type Feature_Vector is array (Positive range 1 .. Feature_Dimension) of Real;
+   type Feature_Index is (<>);
+   type Feature_Vector is array (Feature_Index) of Real;
 
    -- Joint feature map: \phi(X, Y)
    with function Joint_Feature_Map (X : Input_Type; Y : Output_Type) return Feature_Vector;
@@ -30,7 +29,7 @@ package Structured_SVM is
    type Label_Array is array (Positive range <>) of Output_Type;
 
    type Model is record
-      Weights : Feature_Vector := (others => 0.0);
+      Weights : Feature_Vector := [others => 0.0];
    end record;
 
    Dataset_Size_Mismatch  : exception;
