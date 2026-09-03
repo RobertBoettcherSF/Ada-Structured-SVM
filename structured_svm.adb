@@ -42,7 +42,7 @@ package body Structured_SVM is
       Lambda : Real;
       Epochs : Positive) return Model
    is
-      W         : Feature_Vector := (others => 0.0);
+      W         : Feature_Vector := [others => 0.0];
       T         : Long_Integer := 1;
       Eta       : Real;
       Y_Hat     : Output_Type;
@@ -88,7 +88,7 @@ package body Structured_SVM is
       Lambda : Real;
       Epochs : Positive) return Model
    is
-      W         : Feature_Vector := (others => 0.0);
+      W         : Feature_Vector := [others => 0.0];
       T         : Long_Integer := 1;
       Eta       : Real;
       Y_Hat     : Output_Type;
