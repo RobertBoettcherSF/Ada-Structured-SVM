@@ -156,74 +156,83 @@ begin
 
    Put_Line ("TEST 2 — Exception Handling: Empty Dataset");
    declare
-      Failed_As_Expected : Boolean := False;
+      Failed_As_Expected : Boolean;
    begin
-      Model_Margin := SSVM.Train_Margin_Rescaling (Empty_D, Empty_L, 1.0, 10);
-   exception
-      when SSVM.Empty_Dataset => Failed_As_Expected := True;
-      when others => null;
-   end;
-   Check ("2.1 Margin catches Empty_Dataset", Failed_As_Expected);
+      Failed_As_Expected := False;
+      begin
+         Model_Margin := SSVM.Train_Margin_Rescaling (Empty_D, Empty_L, 1.0, 10);
+      exception
+         when SSVM.Empty_Dataset => Failed_As_Expected := True;
+         when others => null;
+      end;
+      Check ("2.1 Margin catches Empty_Dataset", Failed_As_Expected);
 
-   Failed_As_Expected := False;
-   begin
-      Model_Slack := SSVM.Train_Slack_Rescaling (Empty_D, Empty_L, 1.0, 10);
-   exception
-      when SSVM.Empty_Dataset => Failed_As_Expected := True;
-      when others => null;
+      Failed_As_Expected := False;
+      begin
+         Model_Slack := SSVM.Train_Slack_Rescaling (Empty_D, Empty_L, 1.0, 10);
+      exception
+         when SSVM.Empty_Dataset => Failed_As_Expected := True;
+         when others => null;
+      end;
+      Check ("2.2 Slack catches Empty_Dataset", Failed_As_Expected);
+      Check ("2.3 Empty arrays correctly identified", Empty_D'Length = 0);
    end;
-   Check ("2.2 Slack catches Empty_Dataset", Failed_As_Expected);
-   Check ("2.3 Empty arrays correctly identified", Empty_D'Length = 0);
 
    Put_Line ("TEST 3 — Exception Handling: Size Mismatch");
    declare
-      Failed_As_Expected : Boolean := False;
+      Failed_As_Expected : Boolean;
    begin
-      Model_Margin := SSVM.Train_Margin_Rescaling (Dataset, Mismatch_L, 1.0, 10);
-   exception
-      when SSVM.Dataset_Size_Mismatch => Failed_As_Expected := True;
-      when others => null;
-   end;
-   Check ("3.1 Margin catches Size_Mismatch", Failed_As_Expected);
+      Failed_As_Expected := False;
+      begin
+         Model_Margin := SSVM.Train_Margin_Rescaling (Dataset, Mismatch_L, 1.0, 10);
+      exception
+         when SSVM.Dataset_Size_Mismatch => Failed_As_Expected := True;
+         when others => null;
+      end;
+      Check ("3.1 Margin catches Size_Mismatch", Failed_As_Expected);
 
-   Failed_As_Expected := False;
-   begin
-      Model_Slack := SSVM.Train_Slack_Rescaling (Dataset, Mismatch_L, 1.0, 10);
-   exception
-      when SSVM.Dataset_Size_Mismatch => Failed_As_Expected := True;
-      when others => null;
+      Failed_As_Expected := False;
+      begin
+         Model_Slack := SSVM.Train_Slack_Rescaling (Dataset, Mismatch_L, 1.0, 10);
+      exception
+         when SSVM.Dataset_Size_Mismatch => Failed_As_Expected := True;
+         when others => null;
+      end;
+      Check ("3.2 Slack catches Size_Mismatch", Failed_As_Expected);
+      Check ("3.3 Arrays differ in length", Dataset'Length /= Mismatch_L'Length);
    end;
-   Check ("3.2 Slack catches Size_Mismatch", Failed_As_Expected);
-   Check ("3.3 Arrays differ in length", Dataset'Length /= Mismatch_L'Length);
 
    Put_Line ("TEST 4 — Exception Handling: Invalid Hyperparameters");
    declare
-      Failed_As_Expected : Boolean := False;
+      Failed_As_Expected : Boolean;
    begin
-      Model_Margin := SSVM.Train_Margin_Rescaling (Dataset, Labels, 0.0, 10);
-   exception
-      when SSVM.Invalid_Hyperparameter => Failed_As_Expected := True;
-      when others => null;
-   end;
-   Check ("4.1 Margin catches Lambda=0.0", Failed_As_Expected);
+      Failed_As_Expected := False;
+      begin
+         Model_Margin := SSVM.Train_Margin_Rescaling (Dataset, Labels, 0.0, 10);
+      exception
+         when SSVM.Invalid_Hyperparameter => Failed_As_Expected := True;
+         when others => null;
+      end;
+      Check ("4.1 Margin catches Lambda=0.0", Failed_As_Expected);
 
-   Failed_As_Expected := False;
-   begin
-      Model_Margin := SSVM.Train_Margin_Rescaling (Dataset, Labels, -1.0, 10);
-   exception
-      when SSVM.Invalid_Hyperparameter => Failed_As_Expected := True;
-      when others => null;
-   end;
-   Check ("4.2 Margin catches Lambda=-1.0", Failed_As_Expected);
+      Failed_As_Expected := False;
+      begin
+         Model_Margin := SSVM.Train_Margin_Rescaling (Dataset, Labels, -1.0, 10);
+      exception
+         when SSVM.Invalid_Hyperparameter => Failed_As_Expected := True;
+         when others => null;
+      end;
+      Check ("4.2 Margin catches Lambda=-1.0", Failed_As_Expected);
 
-   Failed_As_Expected := False;
-   begin
-      Model_Slack := SSVM.Train_Slack_Rescaling (Dataset, Labels, -0.5, 10);
-   exception
-      when SSVM.Invalid_Hyperparameter => Failed_As_Expected := True;
-      when others => null;
+      Failed_As_Expected := False;
+      begin
+         Model_Slack := SSVM.Train_Slack_Rescaling (Dataset, Labels, -0.5, 10);
+      exception
+         when SSVM.Invalid_Hyperparameter => Failed_As_Expected := True;
+         when others => null;
+      end;
+      Check ("4.3 Slack catches Invalid_Hyperparameter", Failed_As_Expected);
    end;
-   Check ("4.3 Slack catches Invalid_Hyperparameter", Failed_As_Expected);
 
    Put_Line ("TEST 5 — Margin Loss-Augmented Inference Behavior");
    declare
