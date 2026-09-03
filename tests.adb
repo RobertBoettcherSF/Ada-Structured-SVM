@@ -136,7 +136,7 @@ procedure Tests is
    Model_Slack  : SSVM.Model;
    Empty_D      : SSVM.Dataset_Array (1 .. 0);
    Empty_L      : SSVM.Label_Array (1 .. 0);
-   Mismatch_L   : SSVM.Label_Array (1 .. 2) := [1 => 1, 2 => 2];
+   Mismatch_L   : constant SSVM.Label_Array (1 .. 2) := [1 => 1, 2 => 2];
 
 begin
    Put_Line ("TEST 1 — Vector Math Functions");
@@ -263,10 +263,11 @@ begin
 
       declare
          Strong_W : Feature_Vector := [others => 0.0];
+         Y_Max_Strong : Class_Label;
       begin
          Strong_W (1) := 10.0;
-         Y_Max := Argmax_Slack (Dataset (1), Labels (1), Strong_W);
-         Check ("6.2 Weights effect", Predict_Max (Dataset (1), Strong_W) = 1);
+         Y_Max_Strong := Argmax_Slack (Dataset (1), Labels (1), Strong_W);
+         Check ("6.2 Weights effect", Y_Max_Strong = 1);
       end;
       Check ("6.3 Deterministic result", Argmax_Slack (Dataset (1), Labels (1), Zero_W) = Y_Max);
    end;
