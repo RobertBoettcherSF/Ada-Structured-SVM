@@ -24,11 +24,12 @@ procedure Tests is
    type Vector_3D is array (1 .. 3) of Float;
 
    Feature_Dim : constant Positive := 9; 
-   type Feature_Vector is array (Positive range 1 .. Feature_Dim) of Float;
+   subtype Feature_Index is Positive range 1 .. Feature_Dim;
+   type Feature_Vector is array (Feature_Index) of Float;
 
    -- Block-encoding Joint Feature Map: copies X into a class-specific block offset
    function Joint_Feature_Map (X : Vector_3D; Y : Class_Label) return Feature_Vector is
-      V : Feature_Vector := (others => 0.0);
+      V : Feature_Vector := [others => 0.0];
       Offset : constant Natural := (Natural (Y) - 1) * 3;
    begin
       V (Offset + 1) := X (1);
@@ -113,7 +114,7 @@ procedure Tests is
      (Real                    => Float,
       Input_Type              => Vector_3D,
       Output_Type             => Class_Label,
-      Feature_Dimension       => Feature_Dim,
+      Feature_Index           => Feature_Index,
       Feature_Vector          => Feature_Vector,
       Joint_Feature_Map       => Joint_Feature_Map,
       Loss                    => Loss,
@@ -125,23 +126,23 @@ procedure Tests is
    -- 2. TOY DATA AND TEST SUITE EXECUTION
    -- =========================================================================
    Dataset : constant SSVM.Dataset_Array (1 .. 3) :=
-     (1 => (1.0, 0.0, 1.0),
-      2 => (0.0, 1.0, 1.0),
-      3 => (-1.0, -1.0, 1.0));
+     [1 => [1.0, 0.0, 1.0],
+      2 => [0.0, 1.0, 1.0],
+      3 => [-1.0, -1.0, 1.0]];
    
-   Labels : constant SSVM.Label_Array (1 .. 3) := (1 => 1, 2 => 2, 3 => 3);
+   Labels : constant SSVM.Label_Array (1 .. 3) := [1 => 1, 2 => 2, 3 => 3];
 
    Model_Margin : SSVM.Model;
    Model_Slack  : SSVM.Model;
    Empty_D      : SSVM.Dataset_Array (1 .. 0);
    Empty_L      : SSVM.Label_Array (1 .. 0);
-   Mismatch_L   : SSVM.Label_Array (1 .. 2) := (1 => 1, 2 => 2);
+   Mismatch_L   : SSVM.Label_Array (1 .. 2) := [1 => 1, 2 => 2];
 
 begin
    Put_Line ("TEST 1 — Vector Math Functions");
    declare
-      V1 : constant Feature_Vector := (1 => 1.0, 2 => 2.0, others => 0.0);
-      V2 : constant Feature_Vector := (1 => 2.0, 2 => 3.0, others => 0.0);
+      V1 : constant Feature_Vector := [1 => 1.0, 2 => 2.0, others => 0.0];
+      V2 : constant Feature_Vector := [1 => 2.0, 2 => 3.0, others => 0.0];
       V_Add : constant Feature_Vector := SSVM."+" (V1, V2);
       V_Sub : constant Feature_Vector := SSVM."-" (V2, V1);
       V_Mul : constant Feature_Vector := SSVM."*" (2.0, V1);
@@ -226,7 +227,7 @@ begin
 
    Put_Line ("TEST 5 — Margin Loss-Augmented Inference Behavior");
    declare
-      Zero_W : constant Feature_Vector := (others => 0.0);
+      Zero_W : constant Feature_Vector := [others => 0.0];
       Y_Max  : Class_Label;
    begin
       Y_Max := Argmax_Margin (Dataset (1), Labels (1), Zero_W);
@@ -234,7 +235,7 @@ begin
       Check ("5.1 Argmax picks violating class for zero weights", Y_Max /= 1);
 
       declare
-         Strong_W : Feature_Vector := (others => 0.0);
+         Strong_W : Feature_Vector := [others => 0.0];
       begin
          Strong_W (1) := 10.0; -- Strongly biases towards class 1
          Y_Max := Argmax_Margin (Dataset (1), Labels (1), Strong_W);
@@ -245,14 +246,14 @@ begin
 
    Put_Line ("TEST 6 — Slack Loss-Augmented Inference Behavior");
    declare
-      Zero_W : constant Feature_Vector := (others => 0.0);
+      Zero_W : constant Feature_Vector := [others => 0.0];
       Y_Max  : Class_Label;
    begin
       Y_Max := Argmax_Slack (Dataset (1), Labels (1), Zero_W);
       Check ("6.1 Argmax picks violating class for zero weights", Y_Max /= 1);
 
       declare
-         Strong_W : Feature_Vector := (others => 0.0);
+         Strong_W : Feature_Vector := [others => 0.0];
       begin
          Strong_W (1) := 10.0;
          Y_Max := Argmax_Slack (Dataset (1), Labels (1), Strong_W);
@@ -295,8 +296,8 @@ begin
 
    Put_Line ("TEST 12 — Single Sample Edge Case");
    declare
-      Single_D : constant SSVM.Dataset_Array (1 .. 1) := (1 => Dataset (1));
-      Single_L : constant SSVM.Label_Array (1 .. 1)   := (1 => Labels (1));
+      Single_D : constant SSVM.Dataset_Array (1 .. 1) := [1 => Dataset (1)];
+      Single_L : constant SSVM.Label_Array (1 .. 1)   := [1 => Labels (1)];
       M_Single : constant SSVM.Model := SSVM.Train_Margin_Rescaling (Single_D, Single_L, 0.1, 10);
    begin
       Check ("12.1 Completes without error", True);
